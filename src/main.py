@@ -1,5 +1,5 @@
 import bottle
-from bottle import route, run
+from bottle import route, run, template
 
 import pandas as pd
 
@@ -9,17 +9,47 @@ def hello():
     return "Welcome to the DI Awards Ceremony script"
 
 
-@route('/row=<row>')
-def show_award(row):
+@route('/order')
+def order():
 
-    global results
+    global sections
 
-    name = results[' TeamName'].iloc[int(row)]
+    out = "<h3>List of competiton blocks found</h3>"
 
-    school = results[' MembName'].iloc[int(row)]
+    out = out + "<ol>"
 
-    return "Team: {}\nSchool: {}".format(name, school)
+    for sec in sections:
 
+        out = out + "<li>"
+
+        out = out + sec[0] + " " + sec[1]
+
+        out = out + "</li>"
+
+    out = out + "</ol>"
+
+    return out
+
+
+@route("/show_award_section=<section>_team=<team>")
+def show_award(section, team):
+
+    section = int(section)
+    team = int(team)
+
+    global sections, results
+
+    section_start = sections[section][3]
+
+    row_val = results.iloc[section_start + team]
+
+    team = row_val[' TeamName']
+
+    award = row_val[' Rank']
+
+    school = row_val[' MembName']
+
+    return template('award_disp', award=award, team=team, school=school)
 
 def sections_parser(frame):
 
@@ -54,6 +84,10 @@ results = pd.read_csv('../test_input/MidCities_all_scores_export.csv')
 
 print()
 
-print(sections_parser(results))
+sections = sections_parser(results)
+
+print(sections)
+
+print(results.keys())
 
 run(host='localhost', port=8080, debug=True)
