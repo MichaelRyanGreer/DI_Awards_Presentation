@@ -12,9 +12,12 @@ div {text-align: center;}
 
 <body>
 
-<h1>{{award}}
-<h2>{{team}}</h2>
-<h3>{{school}}</h3
+<h2>{{section}}</h2>
+<h1>{{award}}</h1>
+<h1>{{team}}</h1>
+<h3>{{school}}</h3>
+
+<a href="{{link}}"><h4>Next Award</h4></a>
 
 </body>
 
