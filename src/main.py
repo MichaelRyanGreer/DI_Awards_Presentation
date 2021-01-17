@@ -1,13 +1,29 @@
 import bottle
-from bottle import route, run, template
+from bottle import route, run, template, request
 
 import pandas as pd
+
+import os
 
 @route('/')
 def hello():
 
-    return "Welcome to the DI Awards Ceremony script"
+    return template('upload')
 
+@route('/upload', method='POST')
+def do_upload():
+
+    upload = request.files.get('upload')
+
+    global results, sections
+
+    results = pd.read_csv(upload.file)
+
+    print(results)
+
+    sections = sections_parser(results)
+
+    bottle.redirect('/order')
 
 @route('/order')
 def order():
@@ -27,6 +43,8 @@ def order():
         out = out + "</li>"
 
     out = out + "</ol>"
+
+    out = out + '\n\n<a href="/next_award_section=0_team=0">Begin</a>'
 
     return out
 
@@ -54,9 +72,11 @@ def show_award(section, team):
 
     school = row_val[' MembName']
 
+    team_num = row_val[' Team Num']
+
     next_link = '/next_award_section={}_team={}'.format(section, team + 1)
 
-    return template('award_disp', section=section_name, award=award, team=team_name, school=school, link=next_link)
+    return template('award_disp', section=section_name, award=award, team=team_name, school=school, team_num=team_num, link=next_link)
 
 
 @route("/next_award_section=<section>_team=<team>")
@@ -168,14 +188,17 @@ def sections_parser(frame):
 
 mode = 'nogoing'
 
-results = pd.read_csv('../test_input/MidCities_all_scores_export.csv')
+results = ""
+sections = ""
 
-print()
+#results = pd.read_csv('../test_input/MidCities_all_scores_export.csv')
 
-sections = sections_parser(results)
+#print()
 
-print(sections)
+#sections = sections_parser(results)
 
-print(len(sections))
+#print(sections)
+
+#print(len(sections))
 
 run(host='localhost', port=8080, debug=True)
