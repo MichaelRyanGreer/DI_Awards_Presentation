@@ -11,6 +11,7 @@ div {text-align: center;}
 </head>
 <body>
 
+<h1>Welcome to the DI Awards Presentation software</h1>
 <form action="/upload" method="post" enctype="multipart/form-data">
 
     Select a file: <input type="file" name="upload"/>
